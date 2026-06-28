@@ -1,482 +1,580 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
-<meta name="theme-color" content="#0f172a">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Accruals">
-<meta name="description" content="Offline PTO & Sick Accrual Tracker">
-<title>Accruals</title>
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="favicon.png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html, body { background: #f8fafc; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #0f172a; min-height: 100dvh; -webkit-user-select: none; user-select: none; }
-  input { font-size: 16px; } /* prevents zoom-on-focus on phones */
-  button { font-family: inherit; cursor: pointer; }
-  .app { max-width: 480px; margin: 0 auto; min-height: 100dvh; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Accrual Tracker</title>
 
-  .top { background: linear-gradient(135deg, #0f172a, #1e293b); padding: calc(22px + env(safe-area-inset-top)) 16px 26px; }
-  .tophead-row { display: flex; justify-content: space-between; align-items: flex-start; }
-  .top h1 { color: #fff; font-size: 28px; font-weight: 900; letter-spacing: -0.5px; }
-  .lifetime { color: #94a3b8; font-size: 13px; margin-top: 4px; display: flex; align-items: center; gap: 6px; }
-  .lifetime b { color: #fff; }
-  .gear { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); color: #fff; border-radius: 12px; padding: 9px; display: flex; }
-  .gear:active { background: rgba(255,255,255,.2); }
+  <!-- PWA Manifest & Icons -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" href="favicon.png">
 
-  .ctrls { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
-  .rate, .status { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); border-radius: 14px; padding: 9px 13px; display: flex; align-items: center; gap: 7px; color: #fff; font-size: 13px; font-weight: 600; }
-  .rate label { color: #6ee7b7; font-weight: 700; display: flex; align-items: center; gap: 5px; }
-  .rate input { background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,.3); color: #fff; font-weight: 700; width: 64px; text-align: right; outline: none; }
+  <!-- iOS Specific Enhancements -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Accruals">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
-  .stats { display: flex; gap: 12px; overflow-x: auto; padding: 16px; scrollbar-width: none; scroll-snap-type: x mandatory; }
-  .stats::-webkit-scrollbar { display: none; }
-  .card { background: #fff; border-radius: 20px; padding: 18px; min-width: 175px; flex-shrink: 0; box-shadow: 0 4px 18px rgba(0,0,0,.06); scroll-snap-align: start; }
-  .card.dark { background: linear-gradient(135deg, #1e293b, #0f172a); color: #fff; }
-  .clabel { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: #94a3b8; margin-bottom: 8px; display: flex; align-items: center; gap: 7px; }
-  .ic { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-  .val { font-size: 34px; font-weight: 900; letter-spacing: -1px; line-height: 1; }
-  .val small { font-size: 15px; color: #94a3b8; font-weight: 500; }
-  .card.dark .val { color: #fff; }
-  .cash { font-size: 15px; font-weight: 700; padding: 4px 8px; border-radius: 8px; margin-top: 8px; display: inline-block; }
-  .badge { font-size: 10px; font-weight: 700; padding: 4px 11px; border-radius: 100px; margin-top: 11px; display: inline-flex; align-items: center; gap: 4px; }
-  .pbar { background: #334155; border-radius: 100px; height: 5px; margin-top: 12px; overflow: hidden; }
-  .pfill { background: #60a5fa; height: 100%; transition: width .5s; }
-  .phint { font-size: 10px; color: #64748b; margin-top: 6px; text-align: right; }
+  <!-- Android & Global Theme Color -->
+  <meta name="theme-color" content="#0f172a">
 
-  .nudge { margin: 0 16px 16px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-  .nudge .txt { font-size: 12px; color: #b45309; font-weight: 600; }
-  .nudge button { background: #f59e0b; color: #fff; font-weight: 800; font-size: 12px; padding: 8px 12px; border-radius: 9px; border: none; flex: 0 0 auto; }
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --primary: #4f46e5;
+    }
 
-  .main { padding: 0 16px; }
-  .panel { background: #fff; border-radius: 20px; padding: 20px; box-shadow: 0 4px 18px rgba(0,0,0,.06); margin-bottom: 16px; }
-  .panel h2, .panel h3 { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
-  .h2ic { background: #dbeafe; color: #2563eb; padding: 7px; border-radius: 10px; display: inline-flex; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
 
-  .field { margin-bottom: 14px; }
-  .field label { display: block; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: #94a3b8; margin-bottom: 6px; }
-  .iwrap { position: relative; }
-  .iwrap svg { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
-  .field input { width: 100%; padding: 13px 14px 13px 42px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; font-weight: 600; color: #1e293b; outline: none; transition: .2s; font-size: 16px; }
-  .field input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,.1); }
-  .field input.plain { padding-left: 14px; text-align: center; }
-  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .field.g label { color: #059669; } .field.g input { background: #f0fdf4; border-color: #d1fae5; color: #064e3b; }
-  .field.p label { color: #6366f1; } .field.p input { background: #eef2ff; border-color: #c7d2fe; color: #312e81; }
+    html, body {
+      background-color: var(--bg);
+      color: var(--text);
+      height: 100%;
+      overscroll-behavior-y: contain; /* Prevents ugly rubber-band refresh trends in webviews */
+    }
 
-  .btn { width: 100%; padding: 15px; border-radius: 14px; border: none; font-size: 16px; font-weight: 800; color: #fff; display: flex; align-items: center; justify-content: center; gap: 8px; transition: .2s; }
-  .btn.add { background: #2563eb; box-shadow: 0 4px 14px rgba(37,99,235,.35); }
-  .btn.add:active { transform: scale(.97); }
-  .btn.ok { background: #10b981; }
+    body {
+      display: flex;
+      flex-direction: column;
+      padding-top: env(safe-area-inset-top); /* Shifts UI down below dynamic islands/notches */
+      padding-bottom: env(safe-area-inset-bottom); /* Raises layout above system home indicators */
+    }
 
-  table { width: 100%; border-collapse: collapse; min-width: 400px; }
-  thead tr { background: #f8fafc; }
-  th { padding: 11px 12px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; color: #94a3b8; }
-  th.r { text-align: right; } th.c { text-align: center; } th.l { text-align: left; }
-  td { padding: 13px 12px; border-top: 1px solid #f1f5f9; font-size: 14px; }
-  td.date { font-weight: 700; color: #1e293b; white-space: nowrap; padding-left: 16px; }
-  td.hrs { text-align: right; font-weight: 700; }
-  td.bal { text-align: center; }
-  td.bal .n { font-weight: 900; }
-  td.bal .u { font-size: 10px; font-weight: 700; background: #fee2e2; color: #dc2626; padding: 2px 7px; border-radius: 100px; margin-top: 3px; display: inline-block; }
-  td.del { text-align: center; }
-  td.del button { background: none; border: none; color: #cbd5e1; padding: 7px; border-radius: 9px; }
-  td.del button:active { color: #ef4444; background: #fef2f2; }
-  .empty { padding: 50px 20px; text-align: center; color: #94a3b8; }
-  .scroll { overflow-x: auto; }
-  .tophead { display: flex; justify-content: space-between; align-items: center; }
+    #app {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 600px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 16px;
+      gap: 16px;
+      overflow-y: auto;
+    }
 
-  /* Settings modal */
-  .modal-bg { position: fixed; inset: 0; z-index: 50; background: rgba(15,23,42,.55); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; padding: 16px; }
-  .settings-card { background: #fff; border-radius: 20px; padding: 22px; width: 100%; max-width: 380px; box-shadow: 0 20px 50px rgba(0,0,0,.3); }
-  .settings-card h3 { margin: 0 0 18px; font-size: 18px; font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
-  .settings-card .close { background: none; border: none; color: #94a3b8; padding: 4px; display: flex; }
-  .opt { background: #f8fafc; padding: 14px; border-radius: 14px; border: 1px solid #f1f5f9; margin-bottom: 12px; }
-  .opt h4 { margin: 0 0 4px; font-size: 14px; font-weight: 800; color: #1e293b; }
-  .opt p { margin: 0 0 12px; font-size: 12px; color: #94a3b8; line-height: 1.5; }
-  .opt button { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border-radius: 11px; font-weight: 800; font-size: 14px; border: none; }
-  .opt .primary { background: #2563eb; color: #fff; }
-  .opt .ghost { background: #fff; border: 1px solid #e2e8f0; color: #475569; }
-  .backup-status { font-size: 12px; padding: 10px 13px; border-radius: 11px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; font-weight: 600; }
-  .backup-status.ok { background: #f0fdf4; color: #059669; border: 1px solid #d1fae5; }
-  .backup-status.warn { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
-  .storage-note { font-size: 11px; color: #94a3b8; text-align: center; margin-top: 6px; line-height: 1.5; }
+    /* Core Components layout styling */
+    .top { padding: 8px 4px; }
+    .tophead-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    h1 { color: #fff; font-size: 26px; font-weight: 800; }
+    .lifetime { color: #94a3b8; font-size: 13px; display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+    .ctrls { display: flex; justify-content: space-between; align-items: center; }
+    .rate { display: flex; align-items: center; gap: 8px; color: #fff; font-size: 14px; }
+    .rate input { width: 75px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; color: #fff; padding: 4px 8px; font-weight: bold; }
+    .status { font-size: 12px; color: #94a3b8; }
+    
+    .gear { background: transparent; border: none; color: #94a3b8; cursor: pointer; padding: 4px; }
+    .gear:hover { color: #fff; }
 
-  .toast { position: fixed; bottom: calc(20px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); background: #0f172a; color: #fff; padding: 12px 18px; border-radius: 12px; font-size: 13px; font-weight: 700; z-index: 100; box-shadow: 0 8px 24px rgba(0,0,0,.3); max-width: 90%; text-align: center; opacity: 0; transition: opacity .2s; pointer-events: none; }
-  .toast.show { opacity: 1; }
-</style>
+    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .card { background: var(--panel); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; position: relative; border: 1px solid var(--border); }
+    .card.dark { background: #1e293b; color: #fff; grid-column: span 2; border: none; }
+    .clabel { font-size: 12px; font-weight: 600; color: var(--text-muted); display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+    .card.dark .clabel { color: #94a3b8; }
+    .ic { display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 6px; }
+    .val { font-size: 24px; font-weight: 800; line-height: 1; margin-bottom: 6px; }
+    .val small { font-size: 13px; font-weight: 500; opacity: 0.7; }
+    .cash { font-size: 12px; font-weight: 700; padding: 2px 6px; border-radius: 4px; width: fit-content; margin-bottom: 8px; }
+    .badge { font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 3px; }
+    
+    .pbar { background: rgba(255,255,255,0.1); height: 6px; border-radius: 3px; margin: 6px 0; overflow: hidden; }
+    .pfill { background: #6ee7b7; height: 100%; transition: width 0.3s ease; }
+    .phint { font-size: 11px; color: #94a3b8; }
+
+    .nudge { background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 12px; padding: 12px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .nudge .txt { font-size: 13px; color: #3730a3; font-weight: 500; }
+    .nudge button { background: #4f46e5; color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+
+    .main { display: flex; flex-direction: column; gap: 16px; }
+    .panel { background: var(--panel); border-radius: 16px; padding: 20px; border: 1px solid var(--border); }
+    h2, h3 { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+    .h2ic { display: flex; align-items: center; justify-content: center; color: var(--primary); }
+    
+    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    .field label { font-size: 12px; font-weight: 600; color: var(--text-muted); }
+    .iwrap { position: relative; display: flex; align-items: center; }
+    .iwrap svg { position: absolute; left: 12px; color: var(--text-muted); pointer-events: none; }
+    .iwrap input { width: 100%; padding: 10px 10px 10px 36px; border: 1px solid var(--border); border-radius: 10px; font-size: 15px; font-weight: 500; outline: none; background: #f8fafc; }
+    .iwrap input:focus { border-color: var(--primary); background: #fff; }
+    
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .field input.plain { padding: 10px; border: 1px solid var(--border); border-radius: 10px; font-size: 15px; font-weight: 500; outline: none; background: #f8fafc; text-align: center; }
+    .field input.plain:focus { border-color: var(--primary); background: #fff; }
+    .field.g input.plain:focus { border-color: #059669; }
+    
+    .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 8px; transition: background 0.15s; }
+    .btn.add { background: var(--primary); color: #fff; }
+    .btn.add:active { background: #3730a3; }
+    .btn.ok { background: #059669; color: #fff; }
+
+    /* Custom Table View styles */
+    .scroll { width: 100%; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th { background: #f8fafc; text-align: left; padding: 10px 8px; color: var(--text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); }
+    th.r { text-align: right; } th.c { text-align: center; } th.l { text-align: left; }
+    td { padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-weight: 500; vertical-align: middle; }
+    td.date { font-weight: 600; color: #334155; }
+    td.hrs { text-align: right; font-variant-numeric: tabular-nums; color: #475569; }
+    td.bal { text-align: center; font-variant-numeric: tabular-nums; font-size: 13px; line-height: 1.2; }
+    td.bal .n { font-weight: 700; font-size: 14px; }
+    td.bal .u { font-size: 10px; font-weight: 600; color: #94a3b8; background: #f1f5f9; padding: 1px 4px; border-radius: 4px; }
+    td.del { text-align: right; width: 40px; padding-right: 16px; }
+    td.del button { background: transparent; border: none; color: #94a3b8; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; }
+    td.del button:hover { color: #ef4444; }
+    .empty { padding: 40px 20px; text-align: center; color: var(--text-muted); }
+
+    /* Modals layout */
+    .modal-bg { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15,23,42,0.6); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 100; }
+    .settings-card { background: #fff; border-radius: 20px; width: 100%; max-width: 440px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15); display: flex; flex-direction: column; gap: 16px; }
+    .settings-card h3 { font-size: 18px; margin-bottom: 0; display: flex; justify-content: space-between; align-items: center; width: 100%; color: var(--text); }
+    .settings-card .close { background: #f1f5f9; border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; }
+    .backup-status { font-size: 12px; font-weight: 600; padding: 8px 12px; border-radius: 8px; display: flex; align-items: center; gap: 6px; }
+    .backup-status.ok { background: #f0fdf4; color: #166534; }
+    .backup-status.warn { background: #fff7ed; color: #9a3412; }
+    .opt { border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+    .opt:last-of-type { border: none; padding-bottom: 0; }
+    .opt h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .opt p { font-size: 12px; color: var(--text-muted); line-height: 1.4; margin-bottom: 10px; }
+    .opt button { padding: 8px 14px; font-size: 13px; font-weight: 600; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; border: none; }
+    .opt button.primary { background: var(--primary); color: #fff; }
+    .opt button.ghost { background: #f1f5f9; color: var(--text); border: 1px solid var(--border); }
+    .storage-note { font-size: 11px; text-align: center; color: var(--text-muted); font-weight: 500; }
+
+    /* Notification Banner toast */
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background: #1e293b; color: #fff; padding: 10px 20px; border-radius: 30px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000; pointer-events: none; }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+  </style>
 </head>
 <body>
-<div class="app" id="app"></div>
-<div class="toast" id="toast"></div>
 
-<script>
-"use strict";
+  <div id="app"></div>
+  <div id="toast" class="toast"></div>
 
-/* ============================================================
-   Accrual Tracker — fully offline, no external dependencies.
-   Storage: IndexedDB (primary) + localStorage (mirror).
-   Accrual rule: every 30 hrs worked = 1 sick hr + 2.5 PTO hrs.
-   ============================================================ */
+  <!-- Hardened Execution Engine Logic Script Block -->
+  <script>
+    "use strict";
 
-/* ---------- Inline icons ---------- */
-const svg = (a, p) => `<svg width="${a.w||14}" height="${a.h||14}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${a.sw||2}" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
-const I = {
-  db: svg({w:13,h:13}, '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>'),
-  act: svg({}, '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>'),
-  brief: svg({}, '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>'),
-  clock: svg({}, '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'),
-  check: svg({w:11,h:11,sw:2.5}, '<polyline points="20 6 9 17 4 12"/>'),
-  zap: svg({w:11,h:11,sw:2.5}, '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>'),
-  cal: svg({w:16,h:16}, '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>'),
-  plus: svg({w:16,h:16,sw:2.5}, '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>'),
-  trash: svg({w:15,h:15}, '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>'),
-  alert: svg({w:44,h:44,sw:1.5}, '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'),
-  dollar: svg({w:12,h:12,sw:2.5}, '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>'),
-  gear: svg({w:20,h:20}, '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>'),
-  x: svg({w:22,h:22}, '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>'),
-  download: svg({w:16,h:16}, '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>'),
-  upload: svg({w:16,h:16}, '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>'),
-  shield: svg({w:16,h:16}, '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>'),
-};
+    /* ============================================================
+       Accrual Tracker — fully offline, no external dependencies.
+       Storage: IndexedDB (primary) + localStorage (mirror).
+       Accrual rule: every 30 hrs worked = 1 sick hr + 2.5 PTO hrs.
+       ============================================================ */
 
-/* ---------- Storage layer (IndexedDB + localStorage mirror) ---------- */
-const LS_KEY = 'accrual_data_v2';
-const LS_META = 'accrual_meta_v2';
-const DB_NAME = 'accrual_db';
-const DB_STORE = 'kv';
-let _db = null;
+    /* ---------- Inline icons ---------- */
+    const svg = (a, p) => `<svg width="${a.w||14}" height="${a.h||14}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${a.sw||2}" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+    const I = {
+      db: svg({w:13,h:13}, '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>'),
+      act: svg({}, '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>'),
+      brief: svg({}, '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>'),
+      clock: svg({}, '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'),
+      check: svg({w:11,h:11,sw:2.5}, '<polyline points="20 6 9 17 4 12"/>'),
+      zap: svg({w:11,h:11,sw:2.5}, '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>'),
+      cal: svg({w:16,h:16}, '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>'),
+      plus: svg({w:16,h:16,sw:2.5}, '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>'),
+      trash: svg({w:15,h:15}, '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>'),
+      alert: svg({w:44,h:44,sw:1.5}, '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'),
+      dollar: svg({w:12,h:12,sw:2.5}, '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>'),
+      gear: svg({w:20,h:20}, '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>'),
+      x: svg({w:22,h:22}, '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>'),
+      download: svg({w:16,h:16}, '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>'),
+      upload: svg({w:16,h:16}, '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>'),
+      shield: svg({w:16,h:16}, '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>'),
+    };
 
-function openDB(){
-  return new Promise((res)=>{
-    try{
-      const req = indexedDB.open(DB_NAME, 1);
-      req.onupgradeneeded = () => req.result.createObjectStore(DB_STORE);
-      req.onsuccess = () => res(req.result);
-      req.onerror = () => res(null);
-    }catch(e){ res(null); }
-  });
-}
-function idbGet(key){
-  return new Promise((res)=>{
-    if(!_db) return res(undefined);
-    try{
-      const tx = _db.transaction(DB_STORE,'readonly').objectStore(DB_STORE).get(key);
-      tx.onsuccess=()=>res(tx.result); tx.onerror=()=>res(undefined);
-    }catch(e){ res(undefined); }
-  });
-}
-function idbSet(key,val){
-  return new Promise((res)=>{
-    if(!_db) return res(false);
-    try{
-      const tx = _db.transaction(DB_STORE,'readwrite').objectStore(DB_STORE).put(val,key);
-      tx.onsuccess=()=>res(true); tx.onerror=()=>res(false);
-    }catch(e){ res(false); }
-  });
-}
+    /* ---------- Storage layer (IndexedDB + localStorage mirror) ---------- */
+    const LS_KEY = 'accrual_data_v2';
+    const LS_META = 'accrual_meta_v2';
+    const DB_NAME = 'accrual_db';
+    const DB_STORE = 'kv';
+    let _db = null;
 
-async function loadData(){
-  let ls=null, idb=null;
-  try{ const raw=localStorage.getItem(LS_KEY); if(raw) ls=JSON.parse(raw); }catch(e){}
-  try{ idb = await idbGet('data'); }catch(e){}
-  const lt = ls?.updatedAt||0, it = idb?.updatedAt||0;
-  let chosen = (it>=lt ? idb : ls) || ls || idb;
-  if(!chosen) return { entries:[], rate:25 };
-  await persist(chosen.entries||[], chosen.rate??25, true);
-  return { entries: Array.isArray(chosen.entries)?chosen.entries:[], rate: chosen.rate??25 };
-}
-async function persist(entries, rate){
-  const payload = { updatedAt: Date.now(), entries, rate };
-  try{ localStorage.setItem(LS_KEY, JSON.stringify(payload)); }catch(e){}
-  try{ await idbSet('data', payload); }catch(e){}
-}
-function loadMeta(){ try{ return JSON.parse(localStorage.getItem(LS_META))||{}; }catch(e){ return {}; } }
-function saveMeta(m){ try{ localStorage.setItem(LS_META, JSON.stringify(m)); }catch(e){} idbSet('meta', m); }
-
-/* ---------- State ---------- */
-const S = { entries: [], rate: 25, date: '', hours: '', sick: '', pto: '', ok: false, showSettings: false, meta: {} };
-const DAY = 86400000;
-
-/* ---------- Accrual computation ---------- */
-function compute(){
-  let cumH=0, tSick=0, tPto=0;
-  const rows = S.entries.map(e=>{
-    cumH += parseFloat(e.hours||0);
-    tSick += parseFloat(e.sick||0);
-    tPto += parseFloat(e.pto||0);
-    const sickEarned = Math.floor(cumH/30);
-    const ptoEarned = Math.floor((cumH/30)*2.5);
-    return { ...e, cum: cumH.toFixed(2), sickBal: Math.max(0, sickEarned - tSick), ptoBal: Math.max(0, ptoEarned - tPto) };
-  });
-  const last = rows[rows.length-1] || null;
-  return {
-    rows,
-    sickBal: last?last.sickBal:0,
-    ptoBal: last?last.ptoBal:0,
-    total: last?parseFloat(last.cum):0,
-  };
-}
-function money(h){ return (h*S.rate).toLocaleString('en-US',{style:'currency',currency:'USD'}); }
-
-function nextDefaultDate(){
-  let d;
-  if(S.entries.length>0){ d=new Date(S.entries[S.entries.length-1].date+'T00:00:00'); d.setDate(d.getDate()+7); }
-  else d=new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-}
-
-/* ---------- Mutations ---------- */
-async function commit(){ await persist(S.entries, S.rate); render(); }
-
-function addEntry(){
-  const h=parseFloat(S.hours);
-  if(isNaN(h)||h<=0){ toast('Enter hours worked'); return; }
-  if(!S.date){ toast('Pick a pay date'); return; }
-  S.entries = [...S.entries, { id: Date.now()+'', date: S.date, hours: h, sick: parseFloat(S.sick)||0, pto: parseFloat(S.pto)||0 }]
-    .sort((a,b)=> new Date(a.date)-new Date(b.date));
-  S.hours=''; S.sick=''; S.pto='';
-  S.ok=true;
-  commit();
-  setTimeout(()=>{ S.ok=false; render(); }, 2200);
-}
-function delEntry(id){ S.entries = S.entries.filter(x=>x.id!==id); commit(); }
-
-/* ---------- Backup ---------- */
-function exportData(){
-  const blob = new Blob([JSON.stringify({ version:2, exportedAt:new Date().toISOString(), rate:S.rate, entries:S.entries }, null, 2)], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url; a.download=`accrual_backup_${new Date().toISOString().slice(0,10)}.json`;
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url), 2000);
-  S.meta.lastBackup=Date.now(); saveMeta(S.meta);
-  toast('Backup saved to your Downloads'); render();
-}
-function importData(file){
-  const r=new FileReader();
-  r.onload=(e)=>{
-    try{
-      const parsed=JSON.parse(e.target.result);
-      const arr = Array.isArray(parsed) ? parsed : parsed.entries;
-      if(!Array.isArray(arr)) throw new Error('Not a valid backup file.');
-      const map=new Map();
-      S.entries.forEach(x=>map.set(x.id,x));
-      let added=0;
-      arr.forEach(x=>{
-        if(!x.id||!x.date) return;
-        map.set(x.id, { id:x.id, date:x.date, hours:parseFloat(x.hours)||0, sick:parseFloat(x.sick)||0, pto:parseFloat(x.pto)||0 });
-        added++;
+    function openDB(){
+      return new Promise((res)=>{
+        try{
+          const req = indexedDB.open(DB_NAME, 1);
+          req.onupgradeneeded = () => req.result.createObjectStore(DB_STORE);
+          req.onsuccess = () => res(req.result);
+          req.onerror = () => res(null);
+        }catch(e){ res(null); }
       });
-      S.entries = Array.from(map.values()).sort((a,b)=>new Date(a.date)-new Date(b.date));
-      if(typeof parsed.rate==='number') S.rate=parsed.rate;
+    }
+    function idbGet(key){
+      return new Promise((res)=>{
+        if(!_db) return res(undefined);
+        try{
+          const tx = _db.transaction(DB_STORE,'readonly').objectStore(DB_STORE).get(key);
+          tx.onsuccess=()=>res(tx.result); tx.onerror=()=>res(undefined);
+        }catch(e){ res(undefined); }
+      });
+    }
+    function idbSet(key,val){
+      return new Promise((res)=>{
+        if(!_db) return res(false);
+        try{
+          const tx = _db.transaction(DB_STORE,'readwrite').objectStore(DB_STORE).put(val,key);
+          tx.onsuccess=()=>res(true); tx.onerror=()=>res(false);
+        }catch(e){ res(false); }
+      });
+    }
+
+    async function loadData(){
+      let ls=null, idb=null;
+      try{ const raw=localStorage.getItem(LS_KEY); if(raw) ls=JSON.parse(raw); }catch(e){}
+      try{ idb = await idbGet('data'); }catch(e){}
+      const lt = ls?.updatedAt||0, it = idb?.updatedAt||0;
+      let chosen = (it>=lt ? idb : ls) || ls || idb;
+      if(!chosen) return { entries:[], rate:25 };
+      
+      // Hardened runtime parser check on init loading
+      const validatedEntries = Array.isArray(chosen.entries) 
+        ? chosen.entries.filter(e => e && typeof e === 'object' && e.id && e.date)
+        : [];
+      const validatedRate = (typeof chosen.rate === 'number' && !isNaN(chosen.rate) && chosen.rate >= 0) ? chosen.rate : 25;
+
+      await persist(validatedEntries, validatedRate, true);
+      return { entries: validatedEntries, rate: validatedRate };
+    }
+    async function persist(entries, rate){
+      const payload = { updatedAt: Date.now(), entries, rate };
+      try{ localStorage.setItem(LS_KEY, JSON.stringify(payload)); }catch(e){}
+      try{ await idbSet('data', payload); }catch(e){}
+    }
+    function loadMeta(){ try{ return JSON.parse(localStorage.getItem(LS_META))||{}; }catch(e){ return {}; } }
+    function saveMeta(m){ try{ localStorage.setItem(LS_META, JSON.stringify(m)); }catch(e){} idbSet('meta', m); }
+
+    /* ---------- State ---------- */
+    const S = { entries: [], rate: 25, date: '', hours: '', sick: '', pto: '', ok: false, showSettings: false, meta: {} };
+    const DAY = 86400000;
+
+    /* ---------- Accrual computation ---------- */
+    function compute(){
+      let cumH=0, tSick=0, tPto=0;
+      const rows = S.entries.map(e=>{
+        // Defensive calculations guarding against bad/mutated state parsing
+        const hours = Math.max(0, parseFloat(e.hours) || 0);
+        const sick = Math.max(0, parseFloat(e.sick) || 0);
+        const pto = Math.max(0, parseFloat(e.pto) || 0);
+
+        cumH += hours;
+        tSick += sick;
+        tPto += pto;
+        
+        const sickEarned = Math.floor(cumH/30);
+        const ptoEarned = Math.floor((cumH/30)*2.5);
+        return { 
+          ...e, 
+          hours, 
+          sick, 
+          pto, 
+          cum: cumH.toFixed(2), 
+          sickBal: Math.max(0, sickEarned - tSick), 
+          ptoBal: Math.max(0, ptoEarned - tPto) 
+        };
+      });
+      const last = rows[rows.length-1] || null;
+      return {
+        rows,
+        sickBal: last?last.sickBal:0,
+        ptoBal: last?last.ptoBal:0,
+        total: last?parseFloat(last.cum):0,
+      };
+    }
+    function money(h){ return (h*S.rate).toLocaleString('en-US',{style:'currency',currency:'USD'}); }
+
+    function nextDefaultDate(){
+      let d;
+      if(S.entries.length>0){ d=new Date(S.entries[S.entries.length-1].date+'T00:00:00'); d.setDate(d.getDate()+7); }
+      else d=new Date();
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    /* ---------- Mutations ---------- */
+    async function commit(){ await persist(S.entries, S.rate); render(); }
+
+    function addEntry(){
+      const h=parseFloat(S.hours);
+      const sUse=parseFloat(S.sick)||0;
+      const pUse=parseFloat(S.pto)||0;
+
+      // Defensive input constraints preventing manipulation or workflow bugs
+      if(isNaN(h)||h<=0){ toast('Enter valid hours worked'); return; }
+      if(h > 168){ toast('Hours cannot exceed 1 week (168h)'); return; }
+      if(sUse < 0 || pUse < 0){ toast('Used balances cannot be negative'); return; }
+      if(!S.date){ toast('Pick a pay date'); return; }
+      
+      // Guard against malformed date inputs
+      if(isNaN(new Date(S.date + 'T00:00:00').getTime())){ toast('Invalid date format selected'); return; }
+
+      S.entries = [...S.entries, { id: Date.now()+'', date: S.date, hours: h, sick: sUse, pto: pUse }]
+        .sort((a,b)=> new Date(a.date)-new Date(b.date));
+      S.hours=''; S.sick=''; S.pto='';
+      S.ok=true;
       commit();
-      toast(`Imported ${added} entries`);
-    }catch(err){ toast('Import failed: '+err.message); }
-  };
-  r.readAsText(file);
-}
+      setTimeout(()=>{ S.ok=false; render(); }, 2200);
+    }
+    function delEntry(id){ S.entries = S.entries.filter(x=>x.id!==id); commit(); }
 
-/* ---------- Toast ---------- */
-let toastT=null;
-function toast(msg){
-  const el=document.getElementById('toast');
-  el.textContent=msg; el.classList.add('show');
-  clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),2600);
-}
+    /* ---------- Backup ---------- */
+    function exportData(){
+      const blob = new Blob([JSON.stringify({ version:2, exportedAt:new Date().toISOString(), rate:S.rate, entries:S.entries }, null, 2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url; a.download=`accrual_backup_${new Date().toISOString().slice(0,10)}.json`;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url), 2000);
+      S.meta.lastBackup=Date.now(); saveMeta(S.meta);
+      toast('Backup saved to your Downloads'); render();
+    }
+    function importData(file){
+      const r=new FileReader();
+      r.onload=(e)=>{
+        try{
+          const parsed=JSON.parse(e.target.result);
+          if(!parsed || typeof parsed !== 'object') throw new Error('Malformed schema.');
+          
+          const arr = Array.isArray(parsed) ? parsed : parsed.entries;
+          if(!Array.isArray(arr)) throw new Error('Not a valid backup file.');
+          
+          const map=new Map();
+          S.entries.forEach(x=>map.set(x.id,x));
+          let added=0;
+          
+          arr.forEach(x=>{
+            if(!x || typeof x !== 'object' || !x.id || !x.date) return;
+            
+            // Strictly sanitize individual fields during structural ingestion
+            const hoursParsed = Math.max(0, parseFloat(x.hours) || 0);
+            const sickParsed = Math.max(0, parseFloat(x.sick) || 0);
+            const ptoParsed = Math.max(0, parseFloat(x.pto) || 0);
+            
+            map.set(x.id, { 
+              id: String(x.id), 
+              date: String(x.date), 
+              hours: hoursParsed, 
+              sick: sickParsed, 
+              pto: ptoParsed 
+            });
+            added++;
+          });
+          
+          S.entries = Array.from(map.values()).sort((a,b)=>new Date(a.date)-new Date(b.date));
+          
+          if(typeof parsed.rate==='number' && !isNaN(parsed.rate) && parsed.rate >= 0) {
+            S.rate=parsed.rate;
+          }
+          
+          commit();
+          toast(`Imported ${added} entries`);
+        }catch(err){ toast('Import failed: '+err.message); }
+      };
+      r.readAsText(file);
+    }
 
-/* ============================================================ RENDER ============================================================ */
-function render(){
-  const c=compute();
-  const left = 30 - (c.total % 30);
-  const nextAccrual = left===30 ? 0 : left;
-  const prog = ((30 - nextAccrual)/30)*100;
-  if(!S.date) S.date = nextDefaultDate();
+    /* ---------- Toast ---------- */
+    let toastT=null;
+    function toast(msg){
+      const el=document.getElementById('toast');
+      if(!el) return;
+      el.textContent=msg; el.classList.add('show');
+      clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),2600);
+    }
 
-  const last=S.meta.lastBackup||0;
-  const daysSince = last ? Math.floor((Date.now()-last)/DAY) : 999;
-  const nudge = (S.entries.length>0 && daysSince>=7) ? `<div class="nudge">
-      <div class="txt">${last?`Last backup ${daysSince} days ago.`:'No backup yet.'} Keep a copy safe.</div>
-      <button data-backup>Back up</button>
-    </div>` : '';
+    /* ============================================================ RENDER ============================================================ */
+    function render(){
+      const c=compute();
+      const left = 30 - (c.total % 30);
+      const nextAccrual = left===30 ? 0 : left;
+      const prog = ((30 - nextAccrual)/30)*100;
+      if(!S.date) S.date = nextDefaultDate();
 
-  const rowsHtml = c.rows.length ? [...c.rows].reverse().map(e=>`
-    <tr>
-      <td class="date">${new Date(e.date+'T00:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}</td>
-      <td class="hrs">${parseFloat(e.hours).toFixed(2)}</td>
-      <td class="bal"><span class="n" style="color:#059669">${e.sickBal}</span>${e.sick>0?`<div><span class="u">-${e.sick}</span></div>`:''}</td>
-      <td class="bal"><span class="n" style="color:#4f46e5">${e.ptoBal}</span>${e.pto>0?`<div><span class="u">-${e.pto}</span></div>`:''}</td>
-      <td class="del"><button data-del="${e.id}">${I.trash}</button></td>
-    </tr>`).join('')
-    : `<tr><td colspan="5" class="empty">
-        <div style="opacity:.2;margin-bottom:12px;display:flex;justify-content:center">${I.alert}</div>
-        <p style="font-weight:600">No history yet</p>
-        <p style="font-size:13px;opacity:.7;margin-top:4px">Add your first entry above.</p>
-      </td></tr>`;
+      const last=S.meta.lastBackup||0;
+      const daysSince = last ? Math.floor((Date.now()-last)/DAY) : 999;
+      const nudge = (S.entries.length>0 && daysSince>=7) ? `<div class="nudge">
+          <div class="txt">${last?`Last backup ${daysSince} days ago.`:'No backup yet.'} Keep a copy safe.</div>
+          <button data-backup>Back up</button>
+        </div>` : '';
 
-  document.getElementById('app').innerHTML = `
-    <div class="top">
-      <div class="tophead-row">
-        <div>
-          <h1>Accrual Tracker</h1>
-          <p class="lifetime">${I.db} Lifetime Hours: <b>${c.total.toLocaleString()}</b></p>
+      const rowsHtml = c.rows.length ? [...c.rows].reverse().map(e=>`
+        <tr>
+          <td class="date">${new Date(e.date+'T00:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}</td>
+          <td class="hrs">${parseFloat(e.hours).toFixed(2)}</td>
+          <td class="bal"><span class="n" style="color:#059669">${e.sickBal}</span>${e.sick>0?`<div><span class="u">-${e.sick}</span></div>`:''}</td>
+          <td class="bal"><span class="n" style="color:#4f46e5">${e.ptoBal}</span>${e.pto>0?`<div><span class="u">-${e.pto}</span></div>`:''}</td>
+          <td class="del"><button data-del="${e.id}">${I.trash}</button></td>
+        </tr>`).join('')
+        : `<tr><td colspan="5" class="empty">
+            <div style="opacity:.2;margin-bottom:12px;display:flex;justify-content:center">${I.alert}</div>
+            <p style="font-weight:600">No history yet</p>
+            <p style="font-size:13px;opacity:.7;margin-top:4px">Add your first entry above.</p>
+          </td></tr>`;
+
+      document.getElementById('app').innerHTML = `
+        <div class="top">
+          <div class="tophead-row">
+            <div>
+              <h1>Accruals</h1>
+              <p class="lifetime">${I.db} Lifetime Hours: <b>${c.total.toLocaleString()}</b></p>
+            </div>
+            <button class="gear" data-settings>${I.gear}</button>
+          </div>
+          <div class="ctrls">
+            <div class="rate">
+              <label>${I.dollar} Rate</label>
+              <input type="number" inputmode="decimal" value="${S.rate}" data-rate min="0" step="0.01">
+            </div>
+            <div class="status"><span style="color:#6ee7b7">●</span> Saved on device</div>
+          </div>
         </div>
-        <button class="gear" data-settings>${I.gear}</button>
-      </div>
-      <div class="ctrls">
-        <div class="rate">
-          <label>${I.dollar} Rate</label>
-          <input type="number" inputmode="decimal" value="${S.rate}" data-rate>
+
+        <div class="stats">
+          <div class="card">
+            <div class="clabel"><span class="ic" style="background:#d1fae5;color:#059669">${I.act}</span> Sick Balance</div>
+            <div class="val">${c.sickBal} <small>hrs</small></div>
+            <div class="cash" style="background:#f0fdf4;color:#059669">${money(c.sickBal)}</div>
+            <div class="badge" style="background:#f0fdf4;color:#059669">${I.check} Available</div>
+          </div>
+          <div class="card">
+            <div class="clabel"><span class="ic" style="background:#e0e7ff;color:#4f46e5">${I.brief}</span> PTO Balance</div>
+            <div class="val">${c.ptoBal} <small>hrs</small></div>
+            <div class="cash" style="background:#eef2ff;color:#4f46e5">${money(c.ptoBal)}</div>
+            <div class="badge" style="background:#eef2ff;color:#4f46e5">${I.zap} Vacation</div>
+          </div>
+          <div class="card dark">
+            <div class="clabel"><span class="ic" style="background:rgba(255,255,255,.15);color:#fff">${I.clock}</span> Next Accrual</div>
+            <div class="val">${nextAccrual.toFixed(2)} <small>hrs</small></div>
+            <div class="pbar"><div class="pfill" style="width:${prog}%"></div></div>
+            <p class="phint">Progress to next 30h block</p>
+          </div>
         </div>
-        <div class="status"><span style="color:#6ee7b7">●</span> Saved on device</div>
-      </div>
-    </div>
 
-    <div class="stats">
-      <div class="card">
-        <div class="clabel"><span class="ic" style="background:#d1fae5;color:#059669">${I.act}</span> Sick Balance</div>
-        <div class="val">${c.sickBal} <small>hrs</small></div>
-        <div class="cash" style="background:#f0fdf4;color:#059669">${money(c.sickBal)}</div>
-        <div class="badge" style="background:#f0fdf4;color:#059669">${I.check} Available</div>
-      </div>
-      <div class="card">
-        <div class="clabel"><span class="ic" style="background:#e0e7ff;color:#4f46e5">${I.brief}</span> PTO Balance</div>
-        <div class="val">${c.ptoBal} <small>hrs</small></div>
-        <div class="cash" style="background:#eef2ff;color:#4f46e5">${money(c.ptoBal)}</div>
-        <div class="badge" style="background:#eef2ff;color:#4f46e5">${I.zap} Vacation</div>
-      </div>
-      <div class="card dark">
-        <div class="clabel"><span class="ic" style="background:rgba(255,255,255,.15);color:#fff">${I.clock}</span> Next Accrual</div>
-        <div class="val">${nextAccrual.toFixed(2)} <small>hrs</small></div>
-        <div class="pbar"><div class="pfill" style="width:${prog}%"></div></div>
-        <p class="phint">Progress to next 30h block</p>
-      </div>
-    </div>
+        ${nudge}
 
-    ${nudge}
+        <div class="main">
+          <div class="panel">
+            <h2><span class="h2ic">${I.plus}</span> Log Week</h2>
+            <div class="field">
+              <label>Pay Date</label>
+              <div class="iwrap">${I.cal}<input type="date" value="${S.date}" data-f="date"></div>
+            </div>
+            <div class="field">
+              <label>Hours Worked</label>
+              <div class="iwrap">${I.clock}<input type="number" step="0.01" min="0.01" max="168" inputmode="decimal" placeholder="0.00" value="${S.hours}" data-f="hours"></div>
+            </div>
+            <div class="two">
+              <div class="field g"><label>Sick Used</label><input class="plain" type="number" min="0" step="1" inputmode="numeric" placeholder="0" value="${S.sick}" data-f="sick"></div>
+              <div class="field p"><label>PTO Used</label><input class="plain" type="number" min="0" step="1" inputmode="numeric" placeholder="0" value="${S.pto}" data-f="pto"></div>
+            </div>
+            <button class="btn ${S.ok?'ok':'add'}" data-add>
+              ${S.ok ? I.check+' Saved!' : 'Add Entry '+I.plus}
+            </button>
+          </div>
 
-    <div class="main">
-      <div class="panel">
-        <h2><span class="h2ic">${I.plus}</span> Log Week</h2>
-        <div class="field">
-          <label>Pay Date</label>
-          <div class="iwrap">${I.cal}<input type="date" value="${S.date}" data-f="date"></div>
+          <div class="panel" style="padding:0;overflow:hidden">
+            <div class="tophead" style="padding:18px 20px;border-bottom:1px solid #f1f5f9">
+              <h3 style="margin:0">History Log</h3>
+              ${c.rows.length===0?'<span style="font-size:12px;color:#94a3b8">Empty</span>':`<span style="font-size:12px;color:#94a3b8">${c.rows.length} weeks</span>`}
+            </div>
+            <div class="scroll">
+              <table>
+                <thead><tr>
+                  <th class="l" style="padding-left:16px">Pay Date</th>
+                  <th class="r">Hours</th>
+                  <th class="c">Sick</th>
+                  <th class="c">PTO</th>
+                  <th></th>
+                </tr></thead>
+                <tbody>${rowsHtml}</tbody>
+              </table>
+            </div>
+          </div>
         </div>
-        <div class="field">
-          <label>Hours Worked</label>
-          <div class="iwrap">${I.clock}<input type="number" step="0.01" inputmode="decimal" placeholder="0.00" value="${S.hours}" data-f="hours"></div>
+
+        ${S.showSettings?settingsModal():''}
+        <div style="height:env(safe-area-inset-bottom)"></div>
+      `;
+      wire();
+    }
+
+    function settingsModal(){
+      const last=S.meta.lastBackup;
+      const daysSince = last ? Math.floor((Date.now()-last)/DAY) : null;
+      const status = last
+        ? (daysSince>=7
+            ? `<div class="backup-status warn">${I.shield} Last backup ${daysSince} day${daysSince===1?'':'s'} ago</div>`
+            : `<div class="backup-status ok">${I.shield} Backed up ${daysSince===0?'today':daysSince+' day'+(daysSince===1?'':'s')+' ago'}</div>`)
+        : `<div class="backup-status warn">${I.shield} No backup yet — make one now</div>`;
+      return `<div class="modal-bg">
+        <div class="settings-card">
+          <h3>Data &amp; Settings <button class="close" data-close>${I.x}</button></h3>
+          ${status}
+          <div class="opt">
+            <h4>Back up data</h4>
+            <p>Save all your entries and pay rate to a file. Send it to Google Drive or Files so it survives anything.</p>
+            <button class="primary" data-backup>${I.download} Download backup</button>
+          </div>
+          <div class="opt">
+            <h4>Restore data</h4>
+            <p>Import a backup file. Existing entries are kept; matching ones are updated.</p>
+            <input type="file" id="importFile" accept=".json" style="display:none">
+            <button class="ghost" data-import>${I.upload} Import backup</button>
+          </div>
+          <div class="storage-note" id="storageNote">Checking storage protection…</div>
         </div>
-        <div class="two">
-          <div class="field g"><label>Sick Used</label><input class="plain" type="number" step="1" inputmode="numeric" placeholder="0" value="${S.sick}" data-f="sick"></div>
-          <div class="field p"><label>PTO Used</label><input class="plain" type="number" step="1" inputmode="numeric" placeholder="0" value="${S.pto}" data-f="pto"></div>
-        </div>
-        <button class="btn ${S.ok?'ok':'add'}" data-add>
-          ${S.ok ? I.check+' Saved!' : 'Add Entry '+I.plus}
-        </button>
-      </div>
+      </div>`;
+    }
 
-      <div class="panel" style="padding:0;overflow:hidden">
-        <div class="tophead" style="padding:18px 20px;border-bottom:1px solid #f1f5f9">
-          <h3 style="margin:0">History Log</h3>
-          ${c.rows.length===0?'<span style="font-size:12px;color:#94a3b8">Empty</span>':`<span style="font-size:12px;color:#94a3b8">${c.rows.length} weeks</span>`}
-        </div>
-        <div class="scroll">
-          <table>
-            <thead><tr>
-              <th class="l" style="padding-left:16px">Pay Date</th>
-              <th class="r">Hours</th>
-              <th class="c">Sick</th>
-              <th class="c">PTO</th>
-              <th></th>
-            </tr></thead>
-            <tbody>${rowsHtml}</tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+    /* ---------- Wiring ---------- */
+    function wire(){
+      const $=s=>document.querySelector(s);
+      const all=(s,fn)=>document.querySelectorAll(s).forEach(fn);
 
-    ${S.showSettings?settingsModal():''}
-    <div style="height:env(safe-area-inset-bottom)"></div>
-  `;
-  wire();
-}
+      const rate=$('[data-rate]'); 
+      if(rate) rate.onchange=()=>{ 
+        const cleanRate = parseFloat(rate.value);
+        S.rate = (isNaN(cleanRate) || cleanRate < 0) ? 0 : cleanRate; 
+        commit(); 
+      };
+      
+      all('[data-f]',inp=>{
+        inp.oninput=()=>{ S[inp.dataset.f]=inp.value; };
+      });
+      const add=$('[data-add]'); if(add) add.onclick=addEntry;
+      all('[data-del]',b=>b.onclick=()=>delEntry(b.dataset.del));
 
-function settingsModal(){
-  const last=S.meta.lastBackup;
-  const daysSince = last ? Math.floor((Date.now()-last)/DAY) : null;
-  const status = last
-    ? (daysSince>=7
-        ? `<div class="backup-status warn">${I.shield} Last backup ${daysSince} day${daysSince===1?'':'s'} ago</div>`
-        : `<div class="backup-status ok">${I.shield} Backed up ${daysSince===0?'today':daysSince+' day'+(daysSince===1?'':'s')+' ago'}</div>`)
-    : `<div class="backup-status warn">${I.shield} No backup yet — make one now</div>`;
-  return `<div class="modal-bg">
-    <div class="settings-card">
-      <h3>Data &amp; Settings <button class="close" data-close>${I.x}</button></h3>
-      ${status}
-      <div class="opt">
-        <h4>Back up data</h4>
-        <p>Save all your entries and pay rate to a file. Send it to Google Drive or Files so it survives anything.</p>
-        <button class="primary" data-backup>${I.download} Download backup</button>
-      </div>
-      <div class="opt">
-        <h4>Restore data</h4>
-        <p>Import a backup file. Existing entries are kept; matching ones are updated.</p>
-        <input type="file" id="importFile" accept=".json" style="display:none">
-        <button class="ghost" data-import>${I.upload} Import backup</button>
-      </div>
-      <div class="storage-note" id="storageNote">Checking storage protection…</div>
-    </div>
-  </div>`;
-}
+      const set=$('[data-settings]'); if(set) set.onclick=()=>{ S.showSettings=true; render(); checkStorage(); };
+      all('[data-close]',b=>b.onclick=()=>{ S.showSettings=false; render(); });
+      all('[data-backup]',b=>b.onclick=exportData);
+      const imp=$('[data-import]'); if(imp){ const fi=$('#importFile'); imp.onclick=()=>fi.click(); fi.onchange=(e)=>{ if(e.target.files[0]) importData(e.target.files[0]); e.target.value=''; }; }
+    }
 
-/* ---------- Wiring ---------- */
-function wire(){
-  const $=s=>document.querySelector(s);
-  const all=(s,fn)=>document.querySelectorAll(s).forEach(fn);
+    /* ---------- Storage protection ---------- */
+    async function checkStorage(){
+      const note=document.getElementById('storageNote'); if(!note) return;
+      try{
+        if(navigator.storage&&navigator.storage.persisted){
+          let p = await navigator.storage.persisted();
+          if(!p && navigator.storage.persist) p = await navigator.storage.persist();
+          note.innerHTML = p ? '🔒 Storage is protected — your data won\'t be auto-cleared.'
+                             : '⚠️ Add this app to your home screen to lock in storage protection.';
+        } else { note.textContent='Storage protection not supported on this browser.'; }
+      }catch(e){ note.textContent=''; }
+    }
 
-  const rate=$('[data-rate]'); if(rate) rate.onchange=()=>{ S.rate=parseFloat(rate.value)||0; commit(); };
-  all('[data-f]',inp=>{
-    inp.oninput=()=>{ S[inp.dataset.f]=inp.value; };
-  });
-  const add=$('[data-add]'); if(add) add.onclick=addEntry;
-  all('[data-del]',b=>b.onclick=()=>delEntry(b.dataset.del));
-
-  const set=$('[data-settings]'); if(set) set.onclick=()=>{ S.showSettings=true; render(); checkStorage(); };
-  all('[data-close]',b=>b.onclick=()=>{ S.showSettings=false; render(); });
-  all('[data-backup]',b=>b.onclick=exportData);
-  const imp=$('[data-import]'); if(imp){ const fi=$('#importFile'); imp.onclick=()=>fi.click(); fi.onchange=(e)=>{ if(e.target.files[0]) importData(e.target.files[0]); e.target.value=''; }; }
-}
-
-/* ---------- Storage protection ---------- */
-async function checkStorage(){
-  const note=document.getElementById('storageNote'); if(!note) return;
-  try{
-    if(navigator.storage&&navigator.storage.persisted){
-      let p = await navigator.storage.persisted();
-      if(!p && navigator.storage.persist) p = await navigator.storage.persist();
-      note.innerHTML = p ? '🔒 Storage is protected — your data won\'t be auto-cleared.'
-                         : '⚠️ Add this app to your home screen to lock in storage protection.';
-    } else { note.textContent='Storage protection not supported on this browser.'; }
-  }catch(e){ note.textContent=''; }
-}
-
-/* ---------- Boot ---------- */
-async function boot(){
-  _db = await openDB();
-  S.meta = loadMeta();
-  const d = await loadData();
-  S.entries = d.entries; S.rate = d.rate;
-  S.date = nextDefaultDate();
-  render();
-  try{ if(navigator.storage&&navigator.storage.persist){ const p=await navigator.storage.persisted(); if(!p) await navigator.storage.persist(); } }catch(e){}
-  if('serviceWorker' in navigator){ try{ await navigator.serviceWorker.register('service-worker.js'); }catch(e){} }
-}
-boot();
-</script>
+    /* ---------- Boot ---------- */
+    async function boot(){
+      _db = await openDB();
+      S.meta = loadMeta();
+      const d = await loadData();
+      S.entries = d.entries; S.rate = d.rate;
+      S.date = nextDefaultDate();
+      render();
+      try{ if(navigator.storage&&navigator.storage.persist){ const p=await navigator.storage.persisted(); if(!p) await navigator.storage.persist(); } }catch(e){}
+      if('serviceWorker' in navigator){ try{ await navigator.serviceWorker.register('service-worker.js'); }catch(e){} }
+    }
+    boot();
+  </script>
 </body>
 </html>
