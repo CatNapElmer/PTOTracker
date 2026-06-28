@@ -34,8 +34,8 @@
       background-color: var(--bg);
       color: var(--text);
       height: 100%;
-      width: 100%;                   /* FIX: prevents horizontal blowout on Android */
-      overflow-x: hidden;            /* FIX: clamps any overflow to viewport width */
+      width: 100%;
+      overflow-x: hidden;
       overscroll-behavior-y: contain;
     }
 
@@ -44,7 +44,6 @@
       flex-direction: column;
       padding-top: env(safe-area-inset-top);
       padding-bottom: env(safe-area-inset-bottom);
-      /* iOS: ensure safe-area padding is always respected when installed as PWA */
       padding-left: env(safe-area-inset-left);
       padding-right: env(safe-area-inset-right);
     }
@@ -56,15 +55,14 @@
       max-width: 600px;
       margin: 0 auto;
       width: 100%;
-      min-width: 0;                  /* FIX: allows flex child to shrink below content size */
+      min-width: 0;
       padding: 16px;
       gap: 16px;
       overflow-y: auto;
-      overflow-x: hidden;            /* FIX: clips any child that tries to bleed right */
-      -webkit-overflow-scrolling: touch; /* iOS: smooth momentum scrolling */
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
     }
 
-    /* Core Components layout styling */
     .top { padding: 8px 4px; }
     .tophead-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     h1 { color: #fff; font-size: 26px; font-weight: 800; }
@@ -78,7 +76,7 @@
     .gear:hover { color: #fff; }
 
     .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .card { background: var(--panel); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; position: relative; border: 1px solid var(--border); min-width: 0; /* FIX: grid children must opt into shrinking */ }
+    .card { background: var(--panel); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; position: relative; border: 1px solid var(--border); min-width: 0; }
     .card.dark { background: #1e293b; color: #fff; grid-column: span 2; border: none; }
     .clabel { font-size: 12px; font-weight: 600; color: var(--text-muted); display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
     .card.dark .clabel { color: #94a3b8; }
@@ -97,7 +95,7 @@
     .nudge button { background: #4f46e5; color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
 
     .main { display: flex; flex-direction: column; gap: 16px; }
-    .panel { background: var(--panel); border-radius: 16px; padding: 20px; border: 1px solid var(--border); min-width: 0; /* FIX */ }
+    .panel { background: var(--panel); border-radius: 16px; padding: 20px; border: 1px solid var(--border); min-width: 0; }
     h2, h3 { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
     .h2ic { display: flex; align-items: center; justify-content: center; color: var(--primary); }
 
@@ -105,27 +103,19 @@
     .field label { font-size: 12px; font-weight: 600; color: var(--text-muted); }
     .iwrap { position: relative; display: flex; align-items: center; }
     .iwrap svg { position: absolute; left: 12px; color: var(--text-muted); pointer-events: none; flex-shrink: 0; }
-    .iwrap input { width: 100%; padding: 10px 10px 10px 36px; border: 1px solid var(--border); border-radius: 10px; font-size: 15px; font-weight: 500; outline: none; background: #f8fafc;
-      /* iOS: prevents zoom-on-focus (font-size must be >= 16px on iOS or use this) */
-      font-size: max(16px, 15px);
-    }
+    .iwrap input { width: 100%; padding: 10px 10px 10px 36px; border: 1px solid var(--border); border-radius: 10px; font-weight: 500; outline: none; background: #f8fafc; font-size: max(16px, 15px); }
     .iwrap input:focus { border-color: var(--primary); background: #fff; }
 
-    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; min-width: 0; /* FIX: prevents grid from overflowing parent */ }
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; min-width: 0; }
     .field input.plain { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 10px; font-size: max(16px, 15px); font-weight: 500; outline: none; background: #f8fafc; text-align: center; }
     .field input.plain:focus { border-color: var(--primary); background: #fff; }
     .field.g input.plain:focus { border-color: #059669; }
 
-    .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 8px; transition: background 0.15s;
-      /* iOS: removes default button styling */
-      -webkit-appearance: none;
-      appearance: none;
-    }
+    .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 8px; transition: background 0.15s; -webkit-appearance: none; appearance: none; }
     .btn.add { background: var(--primary); color: #fff; }
     .btn.add:active { background: #3730a3; }
     .btn.ok { background: #059669; color: #fff; }
 
-    /* Custom Table View styles */
     .scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
     table { width: 100%; border-collapse: collapse; font-size: 14px; }
     th { background: #f8fafc; text-align: left; padding: 10px 8px; color: var(--text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); }
@@ -141,16 +131,8 @@
     td.del button:hover { color: #ef4444; }
     .empty { padding: 40px 20px; text-align: center; color: var(--text-muted); }
 
-    /* Modals layout */
-    .modal-bg { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15,23,42,0.6); display: flex; align-items: center; justify-content: center; padding: 16px;
-      /* iOS: respect safe areas inside modal overlay */
-      padding-top: max(16px, env(safe-area-inset-top));
-      padding-bottom: max(16px, env(safe-area-inset-bottom));
-      z-index: 100;
-    }
-    .settings-card { background: #fff; border-radius: 20px; width: 100%; max-width: 440px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15); display: flex; flex-direction: column; gap: 16px;
-      max-height: 90vh; overflow-y: auto; -webkit-overflow-scrolling: touch; /* iOS: tall modals scroll properly */
-    }
+    .modal-bg { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15,23,42,0.6); display: flex; align-items: center; justify-content: center; padding: 16px; padding-top: max(16px, env(safe-area-inset-top)); padding-bottom: max(16px, env(safe-area-inset-bottom)); z-index: 100; }
+    .settings-card { background: #fff; border-radius: 20px; width: 100%; max-width: 440px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15); display: flex; flex-direction: column; gap: 16px; max-height: 90vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
     .settings-card h3 { font-size: 18px; margin-bottom: 0; display: flex; justify-content: space-between; align-items: center; width: 100%; color: var(--text); }
     .settings-card .close { background: #f1f5f9; border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); cursor: pointer; flex-shrink: 0; -webkit-appearance: none; }
     .backup-status { font-size: 12px; font-weight: 600; padding: 8px 12px; border-radius: 8px; display: flex; align-items: center; gap: 6px; }
@@ -165,12 +147,7 @@
     .opt button.ghost { background: #f1f5f9; color: var(--text); border: 1px solid var(--border); }
     .storage-note { font-size: 11px; text-align: center; color: var(--text-muted); font-weight: 500; }
 
-    /* Notification Banner toast */
-    .toast { position: fixed; bottom: 24px; bottom: calc(24px + env(safe-area-inset-bottom)); /* iOS: lifts toast above home indicator */
-      left: 50%; transform: translateX(-50%) translateY(100px); background: #1e293b; color: #fff; padding: 10px 20px; border-radius: 30px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000; pointer-events: none;
-      max-width: calc(100vw - 48px); /* FIX: prevents toast from blowing out on narrow screens */
-      text-align: center;
-    }
+    .toast { position: fixed; bottom: calc(24px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%) translateY(100px); background: #1e293b; color: #fff; padding: 10px 20px; border-radius: 30px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000; pointer-events: none; max-width: calc(100vw - 48px); text-align: center; }
     .toast.show { transform: translateX(-50%) translateY(0); }
   </style>
 </head>
@@ -179,17 +156,9 @@
   <div id="app"></div>
   <div id="toast" class="toast"></div>
 
-  <!-- Hardened Execution Engine Logic Script Block -->
   <script>
     "use strict";
 
-    /* ============================================================
-       Accrual Tracker — fully offline, no external dependencies.
-       Storage: IndexedDB (primary) + localStorage (mirror).
-       Accrual rule: every 30 hrs worked = 1 sick hr + 2.5 PTO hrs.
-       ============================================================ */
-
-    /* ---------- Inline icons ---------- */
     const svg = (a, p) => `<svg width="${a.w||14}" height="${a.h||14}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${a.sw||2}" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
     const I = {
       db: svg({w:13,h:13}, '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>'),
@@ -210,7 +179,6 @@
       shield: svg({w:16,h:16}, '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>'),
     };
 
-    /* ---------- Storage layer (IndexedDB + localStorage mirror) ---------- */
     const LS_KEY = 'accrual_data_v2';
     const LS_META = 'accrual_meta_v2';
     const DB_NAME = 'accrual_db';
@@ -252,12 +220,16 @@
       try{ idb = await idbGet('data'); }catch(e){}
       const lt = ls?.updatedAt||0, it = idb?.updatedAt||0;
       let chosen = (it>=lt ? idb : ls) || ls || idb;
-      if(!chosen) return { entries:[], rate:25 };
+      // No data at all — blank rate on first launch
+      if(!chosen) return { entries:[], rate:null };
 
       const validatedEntries = Array.isArray(chosen.entries)
         ? chosen.entries.filter(e => e && typeof e === 'object' && e.id && e.date)
         : [];
-      const validatedRate = (typeof chosen.rate === 'number' && !isNaN(chosen.rate) && chosen.rate >= 0) ? chosen.rate : 25;
+      // Preserve null rate if never set; otherwise use saved value
+      const validatedRate = (typeof chosen.rate === 'number' && !isNaN(chosen.rate) && chosen.rate >= 0)
+        ? chosen.rate
+        : null;
 
       await persist(validatedEntries, validatedRate, true);
       return { entries: validatedEntries, rate: validatedRate };
@@ -270,38 +242,26 @@
     function loadMeta(){ try{ return JSON.parse(localStorage.getItem(LS_META))||{}; }catch(e){ return {}; } }
     function saveMeta(m){ try{ localStorage.setItem(LS_META, JSON.stringify(m)); }catch(e){} idbSet('meta', m); }
 
-    /* ---------- State ---------- */
-    const S = { entries: [], rate: 25, date: '', hours: '', sick: '', pto: '', ok: false, showSettings: false, meta: {} };
+    // rate:null = blank on first launch; persists whatever user types
+    const S = { entries: [], rate: null, date: '', hours: '', sick: '', pto: '', ok: false, showSettings: false, meta: {} };
     const DAY = 86400000;
 
-    /* ---------- Number helpers ---------- */
     function round2(n){ return Math.round((Number(n) || 0) * 100) / 100; }
     function fmt(n){ return String(round2(n)); }
 
-    /* ---------- Accrual computation ---------- */
     function compute(){
       let cumH=0, tSick=0, tPto=0;
       const rows = S.entries.map(e=>{
         const hours = Math.max(0, parseFloat(e.hours) || 0);
         const sick = Math.max(0, parseFloat(e.sick) || 0);
         const pto = Math.max(0, parseFloat(e.pto) || 0);
-
-        cumH += hours;
-        tSick += sick;
-        tPto += pto;
-
+        cumH += hours; tSick += sick; tPto += pto;
         const blocks = Math.floor(cumH / 30);
-        const sickEarned = blocks * 1;
-        const ptoEarned = blocks * 2.5;
-
         return {
-          ...e,
-          hours,
-          sick,
-          pto,
+          ...e, hours, sick, pto,
           cum: cumH.toFixed(2),
-          sickBal: round2(Math.max(0, sickEarned - tSick)),
-          ptoBal: round2(Math.max(0, ptoEarned - tPto))
+          sickBal: round2(Math.max(0, blocks * 1 - tSick)),
+          ptoBal: round2(Math.max(0, blocks * 2.5 - tPto))
         };
       });
       const last = rows[rows.length-1] || null;
@@ -312,7 +272,10 @@
         total: last?parseFloat(last.cum):0,
       };
     }
-    function money(h){ return (h*S.rate).toLocaleString('en-US',{style:'currency',currency:'USD'}); }
+    function money(h){
+      if(S.rate === null || S.rate === 0) return '';
+      return (h*S.rate).toLocaleString('en-US',{style:'currency',currency:'USD'});
+    }
 
     function nextDefaultDate(){
       let d;
@@ -321,20 +284,17 @@
       return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     }
 
-    /* ---------- Mutations ---------- */
     async function commit(){ await persist(S.entries, S.rate); render(); }
 
     function addEntry(){
       const h=parseFloat(S.hours);
       const sUse=parseFloat(S.sick)||0;
       const pUse=parseFloat(S.pto)||0;
-
       if(isNaN(h)||h<=0){ toast('Enter valid hours worked'); return; }
       if(h > 168){ toast('Hours cannot exceed 1 week (168h)'); return; }
       if(sUse < 0 || pUse < 0){ toast('Used balances cannot be negative'); return; }
       if(!S.date){ toast('Pick a pay date'); return; }
       if(isNaN(new Date(S.date + 'T00:00:00').getTime())){ toast('Invalid date format selected'); return; }
-
       S.entries = [...S.entries, { id: Date.now()+'', date: S.date, hours: h, sick: sUse, pto: pUse }]
         .sort((a,b)=> new Date(a.date)-new Date(b.date));
       S.hours=''; S.sick=''; S.pto='';
@@ -344,7 +304,6 @@
     }
     function delEntry(id){ S.entries = S.entries.filter(x=>x.id!==id); commit(); }
 
-    /* ---------- Backup ---------- */
     function exportData(){
       const blob = new Blob([JSON.stringify({ version:2, exportedAt:new Date().toISOString(), rate:S.rate, entries:S.entries }, null, 2)], {type:'application/json'});
       const url = URL.createObjectURL(blob);
@@ -361,35 +320,23 @@
         try{
           const parsed=JSON.parse(e.target.result);
           if(!parsed || typeof parsed !== 'object') throw new Error('Malformed schema.');
-
           const arr = Array.isArray(parsed) ? parsed : parsed.entries;
           if(!Array.isArray(arr)) throw new Error('Not a valid backup file.');
-
           const map=new Map();
           S.entries.forEach(x=>map.set(x.id,x));
           let added=0;
-
           arr.forEach(x=>{
             if(!x || typeof x !== 'object' || !x.id || !x.date) return;
-            const hoursParsed = Math.max(0, parseFloat(x.hours) || 0);
-            const sickParsed = Math.max(0, parseFloat(x.sick) || 0);
-            const ptoParsed = Math.max(0, parseFloat(x.pto) || 0);
             map.set(x.id, {
-              id: String(x.id),
-              date: String(x.date),
-              hours: hoursParsed,
-              sick: sickParsed,
-              pto: ptoParsed
+              id: String(x.id), date: String(x.date),
+              hours: Math.max(0, parseFloat(x.hours) || 0),
+              sick: Math.max(0, parseFloat(x.sick) || 0),
+              pto: Math.max(0, parseFloat(x.pto) || 0)
             });
             added++;
           });
-
           S.entries = Array.from(map.values()).sort((a,b)=>new Date(a.date)-new Date(b.date));
-
-          if(typeof parsed.rate==='number' && !isNaN(parsed.rate) && parsed.rate >= 0) {
-            S.rate=parsed.rate;
-          }
-
+          if(typeof parsed.rate==='number' && !isNaN(parsed.rate) && parsed.rate >= 0) S.rate=parsed.rate;
           commit();
           toast(`Imported ${added} entries`);
         }catch(err){ toast('Import failed: '+err.message); }
@@ -397,7 +344,6 @@
       r.readAsText(file);
     }
 
-    /* ---------- Toast ---------- */
     let toastT=null;
     function toast(msg){
       const el=document.getElementById('toast');
@@ -406,7 +352,6 @@
       clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),2600);
     }
 
-    /* ============================================================ RENDER ============================================================ */
     function render(){
       const c=compute();
       const left = 30 - (c.total % 30);
@@ -435,6 +380,8 @@
             <p style="font-size:13px;opacity:.7;margin-top:4px">Add your first entry above.</p>
           </td></tr>`;
 
+      const rateVal = S.rate !== null ? S.rate : '';
+
       document.getElementById('app').innerHTML = `
         <div class="top">
           <div class="tophead-row">
@@ -447,7 +394,7 @@
           <div class="ctrls">
             <div class="rate">
               <label>${I.dollar} Rate</label>
-              <input type="number" inputmode="decimal" value="${S.rate}" data-rate min="0" step="0.01">
+              <input type="number" inputmode="decimal" value="${rateVal}" placeholder="0.00" data-rate min="0" step="0.01">
             </div>
             <div class="status"><span style="color:#6ee7b7">●</span> Saved on device</div>
           </div>
@@ -457,13 +404,13 @@
           <div class="card">
             <div class="clabel"><span class="ic" style="background:#d1fae5;color:#059669">${I.act}</span> Sick Balance</div>
             <div class="val">${fmt(c.sickBal)} <small>hrs</small></div>
-            <div class="cash" style="background:#f0fdf4;color:#059669">${money(c.sickBal)}</div>
+            ${money(c.sickBal) ? `<div class="cash" style="background:#f0fdf4;color:#059669">${money(c.sickBal)}</div>` : ''}
             <div class="badge" style="background:#f0fdf4;color:#059669">${I.check} Available</div>
           </div>
           <div class="card">
             <div class="clabel"><span class="ic" style="background:#e0e7ff;color:#4f46e5">${I.brief}</span> PTO Balance</div>
             <div class="val">${fmt(c.ptoBal)} <small>hrs</small></div>
-            <div class="cash" style="background:#eef2ff;color:#4f46e5">${money(c.ptoBal)}</div>
+            ${money(c.ptoBal) ? `<div class="cash" style="background:#eef2ff;color:#4f46e5">${money(c.ptoBal)}</div>` : ''}
             <div class="badge" style="background:#eef2ff;color:#4f46e5">${I.zap} Vacation</div>
           </div>
           <div class="card dark">
@@ -550,7 +497,6 @@
       </div>`;
     }
 
-    /* ---------- Wiring ---------- */
     function wire(){
       const $=s=>document.querySelector(s);
       const all=(s,fn)=>document.querySelectorAll(s).forEach(fn);
@@ -558,13 +504,11 @@
       const rate=$('[data-rate]');
       if(rate) rate.oninput=()=>{
         const cleanRate = parseFloat(rate.value);
-        S.rate = (isNaN(cleanRate) || cleanRate < 0) ? 0 : cleanRate;
+        S.rate = (isNaN(cleanRate) || cleanRate < 0) ? null : cleanRate;
         commit();
       };
 
-      all('[data-f]',inp=>{
-        inp.oninput=()=>{ S[inp.dataset.f]=inp.value; };
-      });
+      all('[data-f]',inp=>{ inp.oninput=()=>{ S[inp.dataset.f]=inp.value; }; });
 
       const add=$('[data-add]'); if(add) add.onclick=addEntry;
       all('[data-del]',b=>b.onclick=()=>delEntry(b.dataset.del));
@@ -577,14 +521,10 @@
       if(imp){
         const fi=$('#importFile');
         imp.onclick=()=>fi.click();
-        fi.onchange=(e)=>{
-          if(e.target.files[0]) importData(e.target.files[0]);
-          e.target.value='';
-        };
+        fi.onchange=(e)=>{ if(e.target.files[0]) importData(e.target.files[0]); e.target.value=''; };
       }
     }
 
-    /* ---------- Storage protection ---------- */
     async function checkStorage(){
       const note=document.getElementById('storageNote'); if(!note) return;
       try{
@@ -597,7 +537,6 @@
       }catch(e){ note.textContent=''; }
     }
 
-    /* ---------- Boot ---------- */
     async function boot(){
       _db = await openDB();
       S.meta = loadMeta();
