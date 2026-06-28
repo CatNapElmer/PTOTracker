@@ -4,20 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Accrual Tracker</title>
- 
+
   <!-- PWA Manifest & Icons -->
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" type="image/png" href="favicon.png">
- 
+
   <!-- iOS Specific Enhancements -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Accruals">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
- 
+
   <!-- Android & Global Theme Color -->
   <meta name="theme-color" content="#0f172a">
- 
+
   <style>
     :root {
       --bg: #0f172a;
@@ -27,23 +27,23 @@
       --border: #e2e8f0;
       --primary: #4f46e5;
     }
- 
+
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
- 
+
     html, body {
       background-color: var(--bg);
       color: var(--text);
       height: 100%;
       overscroll-behavior-y: contain; /* Prevents ugly rubber-band refresh trends in webviews */
     }
- 
+
     body {
       display: flex;
       flex-direction: column;
       padding-top: env(safe-area-inset-top); /* Shifts UI down below dynamic islands/notches */
       padding-bottom: env(safe-area-inset-bottom); /* Raises layout above system home indicators */
     }
- 
+
     #app {
       flex: 1;
       display: flex;
@@ -55,7 +55,7 @@
       gap: 16px;
       overflow-y: auto;
     }
- 
+
     /* Core Components layout styling */
     .top { padding: 8px 4px; }
     .tophead-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
@@ -68,7 +68,7 @@
     
     .gear { background: transparent; border: none; color: #94a3b8; cursor: pointer; padding: 4px; }
     .gear:hover { color: #fff; }
- 
+
     .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .card { background: var(--panel); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; position: relative; border: 1px solid var(--border); }
     .card.dark { background: #1e293b; color: #fff; grid-column: span 2; border: none; }
@@ -83,11 +83,11 @@
     .pbar { background: rgba(255,255,255,0.1); height: 6px; border-radius: 3px; margin: 6px 0; overflow: hidden; }
     .pfill { background: #6ee7b7; height: 100%; transition: width 0.3s ease; }
     .phint { font-size: 11px; color: #94a3b8; }
- 
+
     .nudge { background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 12px; padding: 12px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
     .nudge .txt { font-size: 13px; color: #3730a3; font-weight: 500; }
     .nudge button { background: #4f46e5; color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
- 
+
     .main { display: flex; flex-direction: column; gap: 16px; }
     .panel { background: var(--panel); border-radius: 16px; padding: 20px; border: 1px solid var(--border); }
     h2, h3 { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
@@ -101,7 +101,7 @@
     .iwrap input:focus { border-color: var(--primary); background: #fff; }
     
     .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .field input.plain { padding: 10px; border: 1px solid var(--border); border-radius: 10px; font-size: 15px; font-weight: 500; outline: none; background: #f8fafc; text-align: center; }
+    .field input.plain { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 10px; font-size: 15px; font-weight: 500; outline: none; background: #f8fafc; text-align: center; }
     .field input.plain:focus { border-color: var(--primary); background: #fff; }
     .field.g input.plain:focus { border-color: #059669; }
     
@@ -109,7 +109,7 @@
     .btn.add { background: var(--primary); color: #fff; }
     .btn.add:active { background: #3730a3; }
     .btn.ok { background: #059669; color: #fff; }
- 
+
     /* Custom Table View styles */
     .scroll { width: 100%; overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 14px; }
@@ -125,7 +125,7 @@
     td.del button { background: transparent; border: none; color: #94a3b8; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; }
     td.del button:hover { color: #ef4444; }
     .empty { padding: 40px 20px; text-align: center; color: var(--text-muted); }
- 
+
     /* Modals layout */
     .modal-bg { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15,23,42,0.6); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 100; }
     .settings-card { background: #fff; border-radius: 20px; width: 100%; max-width: 440px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15); display: flex; flex-direction: column; gap: 16px; }
@@ -142,27 +142,27 @@
     .opt button.primary { background: var(--primary); color: #fff; }
     .opt button.ghost { background: #f1f5f9; color: var(--text); border: 1px solid var(--border); }
     .storage-note { font-size: 11px; text-align: center; color: var(--text-muted); font-weight: 500; }
- 
+
     /* Notification Banner toast */
     .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background: #1e293b; color: #fff; padding: 10px 20px; border-radius: 30px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000; pointer-events: none; }
     .toast.show { transform: translateX(-50%) translateY(0); }
   </style>
 </head>
 <body>
- 
+
   <div id="app"></div>
   <div id="toast" class="toast"></div>
- 
+
   <!-- Hardened Execution Engine Logic Script Block -->
   <script>
     "use strict";
- 
+
     /* ============================================================
        Accrual Tracker — fully offline, no external dependencies.
        Storage: IndexedDB (primary) + localStorage (mirror).
        Accrual rule: every 30 hrs worked = 1 sick hr + 2.5 PTO hrs.
        ============================================================ */
- 
+
     /* ---------- Inline icons ---------- */
     const svg = (a, p) => `<svg width="${a.w||14}" height="${a.h||14}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${a.sw||2}" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
     const I = {
@@ -183,14 +183,14 @@
       upload: svg({w:16,h:16}, '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>'),
       shield: svg({w:16,h:16}, '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>'),
     };
- 
+
     /* ---------- Storage layer (IndexedDB + localStorage mirror) ---------- */
     const LS_KEY = 'accrual_data_v2';
     const LS_META = 'accrual_meta_v2';
     const DB_NAME = 'accrual_db';
     const DB_STORE = 'kv';
     let _db = null;
- 
+
     function openDB(){
       return new Promise((res)=>{
         try{
@@ -219,7 +219,7 @@
         }catch(e){ res(false); }
       });
     }
- 
+
     async function loadData(){
       let ls=null, idb=null;
       try{ const raw=localStorage.getItem(LS_KEY); if(raw) ls=JSON.parse(raw); }catch(e){}
@@ -233,7 +233,7 @@
         ? chosen.entries.filter(e => e && typeof e === 'object' && e.id && e.date)
         : [];
       const validatedRate = (typeof chosen.rate === 'number' && !isNaN(chosen.rate) && chosen.rate >= 0) ? chosen.rate : 25;
- 
+
       await persist(validatedEntries, validatedRate, true);
       return { entries: validatedEntries, rate: validatedRate };
     }
@@ -244,17 +244,17 @@
     }
     function loadMeta(){ try{ return JSON.parse(localStorage.getItem(LS_META))||{}; }catch(e){ return {}; } }
     function saveMeta(m){ try{ localStorage.setItem(LS_META, JSON.stringify(m)); }catch(e){} idbSet('meta', m); }
- 
+
     /* ---------- State ---------- */
     const S = { entries: [], rate: 25, date: '', hours: '', sick: '', pto: '', ok: false, showSettings: false, meta: {} };
     const DAY = 86400000;
- 
+
     /* ---------- Number helpers ---------- */
     // Round to 2 decimals to kill binary floating-point noise (e.g. 2.4000000000000004 -> 2.4)
     function round2(n){ return Math.round((Number(n) || 0) * 100) / 100; }
     // Clean display string: rounded, with trailing zeros stripped (2.50 -> "2.5", 3.00 -> "3")
     function fmt(n){ return String(round2(n)); }
- 
+
     /* ---------- Accrual computation ---------- */
     function compute(){
       let cumH=0, tSick=0, tPto=0;
@@ -263,7 +263,7 @@
         const hours = Math.max(0, parseFloat(e.hours) || 0);
         const sick = Math.max(0, parseFloat(e.sick) || 0);
         const pto = Math.max(0, parseFloat(e.pto) || 0);
- 
+
         cumH += hours;
         tSick += sick;
         tPto += pto;
@@ -272,7 +272,7 @@
         const blocks = Math.floor(cumH / 30);
         const sickEarned = blocks * 1;
         const ptoEarned = blocks * 2.5;
- 
+
         return { 
           ...e, 
           hours, 
@@ -293,22 +293,22 @@
       };
     }
     function money(h){ return (h*S.rate).toLocaleString('en-US',{style:'currency',currency:'USD'}); }
- 
+
     function nextDefaultDate(){
       let d;
       if(S.entries.length>0){ d=new Date(S.entries[S.entries.length-1].date+'T00:00:00'); d.setDate(d.getDate()+7); }
       else d=new Date();
       return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     }
- 
+
     /* ---------- Mutations ---------- */
     async function commit(){ await persist(S.entries, S.rate); render(); }
- 
+
     function addEntry(){
       const h=parseFloat(S.hours);
       const sUse=parseFloat(S.sick)||0;
       const pUse=parseFloat(S.pto)||0;
- 
+
       // Defensive input constraints preventing manipulation or workflow bugs
       if(isNaN(h)||h<=0){ toast('Enter valid hours worked'); return; }
       if(h > 168){ toast('Hours cannot exceed 1 week (168h)'); return; }
@@ -317,7 +317,7 @@
       
       // Guard against malformed date inputs
       if(isNaN(new Date(S.date + 'T00:00:00').getTime())){ toast('Invalid date format selected'); return; }
- 
+
       S.entries = [...S.entries, { id: Date.now()+'', date: S.date, hours: h, sick: sUse, pto: pUse }]
         .sort((a,b)=> new Date(a.date)-new Date(b.date));
       S.hours=''; S.sick=''; S.pto='';
@@ -326,7 +326,7 @@
       setTimeout(()=>{ S.ok=false; render(); }, 2200);
     }
     function delEntry(id){ S.entries = S.entries.filter(x=>x.id!==id); commit(); }
- 
+
     /* ---------- Backup ---------- */
     function exportData(){
       const blob = new Blob([JSON.stringify({ version:2, exportedAt:new Date().toISOString(), rate:S.rate, entries:S.entries }, null, 2)], {type:'application/json'});
@@ -382,7 +382,7 @@
       };
       r.readAsText(file);
     }
- 
+
     /* ---------- Toast ---------- */
     let toastT=null;
     function toast(msg){
@@ -391,7 +391,7 @@
       el.textContent=msg; el.classList.add('show');
       clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),2600);
     }
- 
+
     /* ============================================================ RENDER ============================================================ */
     function render(){
       const c=compute();
@@ -399,14 +399,14 @@
       const nextAccrual = left===30 ? 0 : left;
       const prog = ((30 - nextAccrual)/30)*100;
       if(!S.date) S.date = nextDefaultDate();
- 
+
       const last=S.meta.lastBackup||0;
       const daysSince = last ? Math.floor((Date.now()-last)/DAY) : 999;
       const nudge = (S.entries.length>0 && daysSince>=7) ? `<div class="nudge">
           <div class="txt">${last?`Last backup ${daysSince} days ago.`:'No backup yet.'} Keep a copy safe.</div>
           <button data-backup>Back up</button>
         </div>` : '';
- 
+
       const rowsHtml = c.rows.length ? [...c.rows].reverse().map(e=>`
         <tr>
           <td class="date">${new Date(e.date+'T00:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}</td>
@@ -420,7 +420,7 @@
             <p style="font-weight:600">No history yet</p>
             <p style="font-size:13px;opacity:.7;margin-top:4px">Add your first entry above.</p>
           </td></tr>`;
- 
+
       document.getElementById('app').innerHTML = `
         <div class="top">
           <div class="tophead-row">
@@ -438,7 +438,7 @@
             <div class="status"><span style="color:#6ee7b7">●</span> Saved on device</div>
           </div>
         </div>
- 
+
         <div class="stats">
           <div class="card">
             <div class="clabel"><span class="ic" style="background:#d1fae5;color:#059669">${I.act}</span> Sick Balance</div>
@@ -459,9 +459,9 @@
             <p class="phint">Progress to next 30h block</p>
           </div>
         </div>
- 
+
         ${nudge}
- 
+
         <div class="main">
           <div class="panel">
             <h2><span class="h2ic">${I.plus}</span> Log Week</h2>
@@ -481,7 +481,7 @@
               ${S.ok ? I.check+' Saved!' : 'Add Entry '+I.plus}
             </button>
           </div>
- 
+
           <div class="panel" style="padding:0;overflow:hidden">
             <div class="tophead" style="padding:18px 20px;border-bottom:1px solid #f1f5f9">
               <h3 style="margin:0">History Log</h3>
@@ -501,13 +501,13 @@
             </div>
           </div>
         </div>
- 
+
         ${S.showSettings?settingsModal():''}
         <div style="height:env(safe-area-inset-bottom)"></div>
       `;
       wire();
     }
- 
+
     function settingsModal(){
       const last=S.meta.lastBackup;
       const daysSince = last ? Math.floor((Date.now()-last)/DAY) : null;
@@ -535,12 +535,12 @@
         </div>
       </div>`;
     }
- 
+
     /* ---------- Wiring ---------- */
     function wire(){
       const $=s=>document.querySelector(s);
       const all=(s,fn)=>document.querySelectorAll(s).forEach(fn);
- 
+
       const rate=$('[data-rate]'); 
       if(rate) rate.oninput=()=>{ 
         const cleanRate = parseFloat(rate.value);
@@ -554,7 +554,7 @@
       
       const add=$('[data-add]'); if(add) add.onclick=addEntry;
       all('[data-del]',b=>b.onclick=()=>delEntry(b.dataset.del));
- 
+
       const set=$('[data-settings]'); if(set) set.onclick=()=>{ S.showSettings=true; render(); checkStorage(); };
       all('[data-close]',b=>b.onclick=()=>{ S.showSettings=false; render(); });
       all('[data-backup]',b=>b.onclick=exportData);
@@ -569,7 +569,7 @@
         }; 
       }
     }
- 
+
     /* ---------- Storage protection ---------- */
     async function checkStorage(){
       const note=document.getElementById('storageNote'); if(!note) return;
@@ -582,7 +582,7 @@
         } else { note.textContent='Storage protection not supported on this browser.'; }
       }catch(e){ note.textContent=''; }
     }
- 
+
     /* ---------- Boot ---------- */
     async function boot(){
       _db = await openDB();
@@ -598,4 +598,3 @@
   </script>
 </body>
 </html>
- 
