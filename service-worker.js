@@ -1,5 +1,5 @@
 /* Accrual Tracker service worker — caches the app shell for instant, offline loading. */
-const CACHE = 'accrual-v1';
+const CACHE = 'accrual-v2';
 const ASSETS = [
   './',
   './index.html',
